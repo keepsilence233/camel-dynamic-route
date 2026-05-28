@@ -35,7 +35,7 @@ class DefaultDynamicRouteEngineTest {
         DefaultDynamicRouteEngine engine = new DefaultDynamicRouteEngine(
             cache,
             new DefaultRouteMatcher(),
-            new PluginPipeline(new PluginRegistry(Map.of("noopRoutePlugin", new NoOpRoutePlugin())), new com.fasterxml.jackson.databind.ObjectMapper()),
+            new PluginPipeline(new PluginRegistry(Map.of("noopRoutePlugin", new NoOpRoutePlugin()))),
             executorRegistry
         );
 

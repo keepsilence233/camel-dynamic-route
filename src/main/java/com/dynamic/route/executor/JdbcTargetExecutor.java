@@ -2,8 +2,7 @@ package com.dynamic.route.executor;
 
 import com.dynamic.route.config.DataSourceRegistry;
 import com.dynamic.route.engine.RouteContext;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dynamic.route.util.JsonUtils;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -21,11 +20,9 @@ public class JdbcTargetExecutor implements TargetExecutor {
     private static final Logger log = LoggerFactory.getLogger(JdbcTargetExecutor.class);
 
     private final DataSourceRegistry dataSourceRegistry;
-    private final ObjectMapper objectMapper;
 
-    public JdbcTargetExecutor(DataSourceRegistry dataSourceRegistry, ObjectMapper objectMapper) {
+    public JdbcTargetExecutor(DataSourceRegistry dataSourceRegistry) {
         this.dataSourceRegistry = dataSourceRegistry;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -128,11 +125,7 @@ public class JdbcTargetExecutor implements TargetExecutor {
             return (Map<String, Object>) map;
         }
         if (body instanceof String jsonStr) {
-            try {
-                return objectMapper.readValue(jsonStr, new TypeReference<>() {});
-            } catch (Exception e) {
-                throw new IllegalArgumentException("JDBC body is not a valid JSON object", e);
-            }
+            return JsonUtils.parseMap(jsonStr);
         }
         throw new IllegalArgumentException("JDBC request body must be a Map or a JSON string");
     }

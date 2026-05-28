@@ -1,8 +1,7 @@
 package com.dynamic.route.engine;
 
 import com.dynamic.route.model.FailStrategy;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dynamic.route.util.JsonUtils;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +15,9 @@ public class PluginPipeline {
     private static final Logger log = LoggerFactory.getLogger(PluginPipeline.class);
 
     private final PluginRegistry pluginRegistry;
-    private final ObjectMapper objectMapper;
 
-    public PluginPipeline(PluginRegistry pluginRegistry, ObjectMapper objectMapper) {
+    public PluginPipeline(PluginRegistry pluginRegistry) {
         this.pluginRegistry = pluginRegistry;
-        this.objectMapper = objectMapper;
     }
 
     public RouteContext applyPrePlugins(RouteContext context) {
@@ -95,11 +92,6 @@ public class PluginPipeline {
         if (configJson == null || configJson.isBlank()) {
             return Map.of();
         }
-        try {
-            return objectMapper.readValue(configJson, new TypeReference<>() {
-            });
-        } catch (Exception exception) {
-            throw new IllegalArgumentException("Invalid plugin config json", exception);
-        }
+        return JsonUtils.parseMap(configJson);
     }
 }

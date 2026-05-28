@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS route_target (
     component_name   VARCHAR(64),                       -- Camel 组件名（如 http、activemq）
     datasource_name  VARCHAR(64),                       -- JDBC 专用：数据源名，空=主库
     operation_type   VARCHAR(32),                       -- 操作语义标注（forward/query/insert 等，仅作元数据）
-    config_json      CLOB         NOT NULL,             -- JDBC: SQL 模板；HTTP/MQ: 附加配置 JSON
+    config_json      LONGTEXT     NOT NULL,             -- JDBC: SQL 模板（非 JSON）；HTTP/MQ: 附加配置 JSON
     secret_ref       VARCHAR(128),                      -- 凭证引用（预留，如 Vault secret path）
     status           VARCHAR(16)  NOT NULL,             -- ACTIVE / INACTIVE
     version          BIGINT       NOT NULL,             -- 乐观锁版本号
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS plugin_definition (
     plugin_scope      VARCHAR(32)  NOT NULL,            -- 作用域（route/global，当前仅 route）
     bean_name         VARCHAR(128) NOT NULL,            -- Spring Bean 名（元数据，引擎按 plugin_code 查找）
     plugin_class      VARCHAR(256),                     -- 全限定类名（元数据）
-    config_schema_json CLOB,                            -- 插件配置项 JSON Schema（管理后台使用）
+    config_schema_json JSON,                            -- 插件配置项 JSON Schema（管理后台使用）
     status            VARCHAR(16)  NOT NULL,            -- ACTIVE / INACTIVE
     remark            VARCHAR(500),
     created_at        TIMESTAMP    NOT NULL,
@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS route_plugin_binding (
     sort_order        INT         NOT NULL,             -- 同 phase 内执行顺序，越小越先
     enabled           TINYINT     NOT NULL,             -- 1=启用 / 0=禁用（不删除只禁用）
     fail_strategy     VARCHAR(32) NOT NULL,             -- FAIL_FAST / CONTINUE
-    plugin_config_json CLOB,                            -- 本次绑定的插件实例配置（TransformTemplate JSON 等）
+    plugin_config_json JSON,                            -- 本次绑定的插件实例配置（TransformTemplate JSON 等）
     created_at        TIMESTAMP   NOT NULL,
     updated_at        TIMESTAMP   NOT NULL,
     CONSTRAINT uk_route_plugin_binding       UNIQUE (route_code, plugin_code, plugin_phase, sort_order),
@@ -169,21 +169,21 @@ CREATE TABLE IF NOT EXISTS route_plugin_binding (
 -- =============================================================================
 
 -- 路由匹配主索引：引擎按 app_code + path + method + status 过滤
-CREATE INDEX IF NOT EXISTS idx_route_definition_match
-    ON route_definition(app_code, request_path, request_method, status);
+CREATE INDEX idx_route_definition_match
+    ON route_definition (app_code, request_path, request_method, status);
 
 -- 路由排序索引：同 app_code 下按 route_order 取优先级最高的命中路由
-CREATE INDEX IF NOT EXISTS idx_route_definition_order
-    ON route_definition(app_code, status, route_order);
+CREATE INDEX idx_route_definition_order
+    ON route_definition (app_code, status, route_order);
 
 -- 目标查询索引：按类型批量加载 target（缓存刷新时使用）
-CREATE INDEX IF NOT EXISTS idx_route_target_type_status
-    ON route_target(target_type, status);
+CREATE INDEX idx_route_target_type_status
+    ON route_target (target_type, status);
 
 -- 插件查询索引：按 phase 批量加载活跃插件
-CREATE INDEX IF NOT EXISTS idx_plugin_definition_phase_status
-    ON plugin_definition(plugin_phase, status);
+CREATE INDEX idx_plugin_definition_phase_status
+    ON plugin_definition (plugin_phase, status);
 
 -- 绑定查询索引：按路由 + phase + enabled 快速拉取插件链
-CREATE INDEX IF NOT EXISTS idx_route_plugin_binding_route_phase_enabled
-    ON route_plugin_binding(route_code, plugin_phase, enabled);
+CREATE INDEX idx_route_plugin_binding_route_phase_enabled
+    ON route_plugin_binding (route_code, plugin_phase, enabled);

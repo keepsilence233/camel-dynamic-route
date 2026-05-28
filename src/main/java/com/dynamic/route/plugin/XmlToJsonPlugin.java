@@ -7,7 +7,6 @@ import com.dynamic.route.transform.StructuralNavigator;
 import com.dynamic.route.transform.TransformEngine;
 import com.dynamic.route.transform.TransformTemplate;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -31,12 +30,10 @@ import org.springframework.stereotype.Component;
 public class XmlToJsonPlugin implements RoutePlugin {
 
     private final TransformEngine transformEngine;
-    private final ObjectMapper jsonMapper;
     private final XmlMapper xmlMapper = new XmlMapper();
 
-    public XmlToJsonPlugin(TransformEngine transformEngine, ObjectMapper jsonMapper) {
+    public XmlToJsonPlugin(TransformEngine transformEngine) {
         this.transformEngine = transformEngine;
-        this.jsonMapper = jsonMapper;
     }
 
     @Override

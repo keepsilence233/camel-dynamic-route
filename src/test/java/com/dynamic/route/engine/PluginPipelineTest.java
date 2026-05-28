@@ -23,7 +23,7 @@ class PluginPipelineTest {
     @DisplayName("applyPrePlugins keeps body when noop plugin is bound")
     void applyPrePlugins_whenNoOpPluginBound_keepsBody() {
         PluginRegistry pluginRegistry = new PluginRegistry(Map.of("noopRoutePlugin", new NoOpRoutePlugin()));
-        PluginPipeline pipeline = new PluginPipeline(pluginRegistry, new com.fasterxml.jackson.databind.ObjectMapper());
+        PluginPipeline pipeline = new PluginPipeline(pluginRegistry);
         RouteContext context = new RouteContext(
             "trace-1",
             new RouteRequest("demo-app", "/dynamic-router/demo", "POST", "json", null, null, Map.of(), Map.of("value", 1)),

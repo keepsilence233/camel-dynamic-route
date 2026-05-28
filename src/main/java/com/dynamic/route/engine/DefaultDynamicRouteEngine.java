@@ -5,7 +5,7 @@ import com.dynamic.route.model.PluginExecutionPhase;
 import com.dynamic.route.model.RouteDefinition;
 import com.dynamic.route.model.RoutePluginBinding;
 import com.dynamic.route.model.RouteTarget;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dynamic.route.util.JsonUtils;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,20 +23,17 @@ public class DefaultDynamicRouteEngine implements DynamicRouteEngine {
     private final RouteMatcher routeMatcher;
     private final PluginPipeline pluginPipeline;
     private final TargetExecutorRegistry targetExecutorRegistry;
-    private final ObjectMapper objectMapper;
 
     public DefaultDynamicRouteEngine(
         RouteConfigurationCache cache,
         RouteMatcher routeMatcher,
         PluginPipeline pluginPipeline,
-        TargetExecutorRegistry targetExecutorRegistry,
-        ObjectMapper objectMapper
+        TargetExecutorRegistry targetExecutorRegistry
     ) {
         this.cache = cache;
         this.routeMatcher = routeMatcher;
         this.pluginPipeline = pluginPipeline;
         this.targetExecutorRegistry = targetExecutorRegistry;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -114,11 +111,7 @@ public class DefaultDynamicRouteEngine implements DynamicRouteEngine {
         if (!t.startsWith("{") && !t.startsWith("[")) {
             return body; // 非 JSON（如 XML），直接返回原 String
         }
-        try {
-            return objectMapper.readValue(s, Object.class);
-        } catch (Exception ignored) {
-            return body;
-        }
+        return JsonUtils.parseLoose(s);
     }
 
     private com.dynamic.route.model.PluginDefinition requirePluginDefinition(

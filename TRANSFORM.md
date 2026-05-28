@@ -1,6 +1,6 @@
 # 转换插件配置手册
 
-本文档描述 4 个内置转换插件（`json-to-json-mapping`、`json-to-xml`、`xml-to-json`、`xml-to-xml-mapping`）共用的 **TransformTemplate** 配置 DSL，以及如何通过它完成复杂嵌套结构（包括数组套数组）的字段映射、类型转换和自定义脚本。
+本文档描述 4 个内置转换插件（`json-to-json`、`json-to-xml`、`xml-to-json`、`xml-to-xml`）共用的 **TransformTemplate** 配置 DSL，以及如何通过它完成复杂嵌套结构（包括数组套数组）的字段映射、类型转换和自定义脚本。
 
 ---
 
@@ -23,8 +23,8 @@
 | `mappings` | Array | 字段重命名 / 类型转换 / 脚本变换规则，有序执行 |
 | `addFields` | Array | 向指定路径写入固定值 |
 | `removeFields` | Array&lt;String&gt; | 删除指定路径的字段 |
-| `rootElement` | String | XML 输出时的根元素名（`json-to-xml` / `xml-to-xml-mapping` 使用） |
-| `forceArrayElements` | Array&lt;String&gt; | 强制视为数组的 XML 元素名（`xml-to-json` / `xml-to-xml-mapping` 使用） |
+| `rootElement` | String | XML 输出时的根元素名（`json-to-xml` / `xml-to-xml` 使用） |
+| `forceArrayElements` | Array&lt;String&gt; | 强制视为数组的 XML 元素名（`xml-to-json` / `xml-to-xml` 使用） |
 
 ---
 
@@ -437,7 +437,7 @@ INSERT INTO route_plugin_binding (
     plugin_config_json, created_at, updated_at
 ) VALUES (
     'your-route-code',
-    'json-to-json-mapping',   -- 插件名
+    'json-to-json',   -- 插件名
     'PRE',                    -- PRE：发往后端前执行；POST：收到后端响应后执行
     1,                        -- 同一 phase 内的执行顺序
     1,

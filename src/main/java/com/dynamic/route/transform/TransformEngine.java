@@ -1,7 +1,6 @@
 package com.dynamic.route.transform;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dynamic.route.util.JsonUtils;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -16,17 +15,15 @@ import org.springframework.stereotype.Component;
 public class TransformEngine {
 
     private final GroovyScriptExecutor scriptExecutor;
-    private final ObjectMapper objectMapper;
 
-    public TransformEngine(GroovyScriptExecutor scriptExecutor, ObjectMapper objectMapper) {
+    public TransformEngine(GroovyScriptExecutor scriptExecutor) {
         this.scriptExecutor = scriptExecutor;
-        this.objectMapper = objectMapper;
     }
 
     /** 将 config Map 转换为 TransformTemplate 对象 */
     public TransformTemplate parseTemplate(Map<String, Object> config) {
         try {
-            return objectMapper.convertValue(config, TransformTemplate.class);
+            return JsonUtils.convertValue(config, TransformTemplate.class);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid transform template config", e);
         }
@@ -144,13 +141,7 @@ public class TransformEngine {
     // 深拷贝（JSON 序列化/反序列化，确保 Map/List 全部独立）
     // -----------------------------------------------------------------------
 
-    @SuppressWarnings("unchecked")
     private Map<String, Object> deepCopy(Map<String, Object> data) {
-        try {
-            byte[] bytes = objectMapper.writeValueAsBytes(data);
-            return objectMapper.readValue(bytes, new TypeReference<>() {});
-        } catch (Exception e) {
-            throw new IllegalStateException("TransformEngine: failed to deep-copy input data", e);
-        }
+        return JsonUtils.deepCopyMap(data);
     }
 }

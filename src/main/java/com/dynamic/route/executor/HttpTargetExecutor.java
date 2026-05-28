@@ -1,7 +1,7 @@
 package com.dynamic.route.executor;
 
 import com.dynamic.route.engine.RouteContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dynamic.route.util.JsonUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
@@ -17,11 +17,9 @@ public class HttpTargetExecutor implements TargetExecutor {
     private static final Logger log = LoggerFactory.getLogger(HttpTargetExecutor.class);
 
     private final ProducerTemplate producerTemplate;
-    private final ObjectMapper objectMapper;
 
-    public HttpTargetExecutor(ProducerTemplate producerTemplate, ObjectMapper objectMapper) {
+    public HttpTargetExecutor(ProducerTemplate producerTemplate) {
         this.producerTemplate = producerTemplate;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -53,11 +51,7 @@ public class HttpTargetExecutor implements TargetExecutor {
 
     private String serialize(Object body) {
         if (body instanceof Map<?, ?> || body instanceof Collection<?>) {
-            try {
-                return objectMapper.writeValueAsString(body);
-            } catch (Exception e) {
-                throw new IllegalStateException("HttpTargetExecutor: failed to serialize body", e);
-            }
+            return JsonUtils.toJson(body);
         }
         if (body instanceof byte[] bytes) {
             return new String(bytes, StandardCharsets.UTF_8);

@@ -34,7 +34,7 @@ public class XmlToXmlPlugin implements RoutePlugin {
 
     @Override
     public String pluginCode() {
-        return "xml-to-xml-mapping";
+        return "xml-to-xml";
     }
 
     @Override

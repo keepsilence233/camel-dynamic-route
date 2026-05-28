@@ -374,7 +374,7 @@ curl -X POST http://127.0.0.1:8080/dynamic-router/user \
 
 ---
 
-### `json-to-json-mapping` — JSON 字段映射
+### `json-to-json` — JSON 字段映射
 
 将 JSON 体中的字段做重命名、新增、删除。
 
@@ -443,7 +443,7 @@ curl -X POST http://127.0.0.1:8080/dynamic-router/user \
 
 ---
 
-### `xml-to-xml-mapping` — XML 字段映射
+### `xml-to-xml` — XML 字段映射
 
 解析 XML 后对**顶层元素**做重命名，再序列化回 XML（PRE 或 POST 阶段均可）。
 
@@ -483,7 +483,7 @@ curl -X POST http://127.0.0.1:8080/dynamic-router/user \
 -- POST-1: XML→JSON（返回 JSON 给客户端）
 
 INSERT INTO route_plugin_binding VALUES
-  ('xml-transform-route', 'xml-to-xml-mapping', 'PRE',  1, 1, 'FAIL_FAST',
+  ('xml-transform-route', 'xml-to-xml', 'PRE',  1, 1, 'FAIL_FAST',
    '{"rootElement":"req","mappings":[{"from":"OrderId","to":"order_id"}]}', NOW(), NOW()),
   ('xml-transform-route', 'xml-to-json',         'POST', 1, 1, 'CONTINUE',
    NULL, NOW(), NOW());
@@ -492,7 +492,7 @@ INSERT INTO route_plugin_binding VALUES
 执行时序：
 
 ```
-请求 XML → [PRE-1: xml-to-xml-mapping] → 重命名后的 XML → [HTTP 执行器] → 后端 XML 响应
+请求 XML → [PRE-1: xml-to-xml] → 重命名后的 XML → [HTTP 执行器] → 后端 XML 响应
                                                                               │
 客户端 ← JSON ← [POST-1: xml-to-json] ←──────────────────────────────────────┘
 ```
@@ -505,6 +505,6 @@ INSERT INTO route_plugin_binding VALUES
 |---|---|
 | `timeout_ms` / `retry_times` 未生效 | `RouteDefinition` 中的字段已持久化，但引擎尚未应用超时/重试逻辑 |
 | 请求体未自动反序列化 | Netty 接收到的 body 为原始字节/字符串，JDBC 执行器和转换插件在内部各自解析 |
-| XML 插件只支持顶层字段映射 | `xml-to-xml-mapping` 不处理嵌套元素重命名 |
+| XML 插件只支持顶层字段映射 | `xml-to-xml` 不处理嵌套元素重命名 |
 | 单 Camel 入口 | 目前只有 `netty-http` 一种入口协议；支持其他入口（如 Kafka、定时触发）需扩展 `DynamicRouterRouteBuilder` |
 | 无管理 API | 路由配置变更只能直接操作数据库，缓存在下次定时刷新后生效 |

@@ -5,8 +5,7 @@ import com.dynamic.route.engine.PluginResult;
 import com.dynamic.route.engine.RoutePlugin;
 import com.dynamic.route.transform.TransformEngine;
 import com.dynamic.route.transform.TransformTemplate;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dynamic.route.util.JsonUtils;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -29,12 +28,10 @@ import org.springframework.stereotype.Component;
 public class JsonToXmlPlugin implements RoutePlugin {
 
     private final TransformEngine transformEngine;
-    private final ObjectMapper jsonMapper;
     private final XmlMapper xmlMapper = new XmlMapper();
 
-    public JsonToXmlPlugin(TransformEngine transformEngine, ObjectMapper jsonMapper) {
+    public JsonToXmlPlugin(TransformEngine transformEngine) {
         this.transformEngine = transformEngine;
-        this.jsonMapper = jsonMapper;
     }
 
     @Override
@@ -67,11 +64,7 @@ public class JsonToXmlPlugin implements RoutePlugin {
             return (Map<String, Object>) map;
         }
         if (rawBody instanceof String s && !s.isBlank()) {
-            try {
-                return jsonMapper.readValue(s, new TypeReference<>() {});
-            } catch (Exception e) {
-                throw new IllegalArgumentException("JsonToXmlPlugin: body is not valid JSON", e);
-            }
+            return JsonUtils.parseMap(s);
         }
         return null;
     }
