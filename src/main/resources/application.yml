@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: camel-dynamic-route
+  datasource:
+    url: jdbc:h2:mem:camel_dynamic_route;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+camel:
+  springboot:
+    main-run-controller: true
+
+route:
+  ingress:
+    protocol: netty-http
+    host: 127.0.0.1
+    port: 8080
+    path: /dynamic-router
+  cache:
+    refresh-ms: 30000
+  # 多数据源配置（可选）。
+  # key 对应 route_target.datasource_name；不填 datasource_name 时使用 spring.datasource 主库。
+  # 每个条目独立创建 HikariCP 连接池，Spring 容器关闭时自动释放。
+  #
+  # datasources:
+  #   crm-db:
+  #     url: jdbc:mysql://crm-host:3306/crm_db
+  #     username: crm_user
+  #     password: crm_pass
+  #     driver-class-name: com.mysql.cj.jdbc.Driver   # 可选，HikariCP 能自动推断常见驱动
+  #     maximum-pool-size: 10                          # 默认 10
+  #   erp-db:
+  #     url: jdbc:postgresql://erp-host:5432/erp_db
+  #     username: erp_user
+  #     password: erp_pass
